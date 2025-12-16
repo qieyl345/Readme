@@ -50,7 +50,7 @@
         <i>Frontend & Mobile Development</i>
       </td>
       <td align="center" width="250">
-        <img src="github/assets/aqil.pjpg" width="120" height="120" style="border-radius: 50%; object-fit: cover;"><br>
+        <img src="github/assets/aqil.jpg" width="120" height="120" style="border-radius: 50%; object-fit: cover;"><br>
         <b>AQIL IMRAN BIN<br>NORHIDZAM</b><br>
         <code>2024779269</code><br>
         <i>Security Lead & AI Integration</i>
