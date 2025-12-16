@@ -10,7 +10,7 @@
         <i>Building the Future Through Innovation</i>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/vecna_logo.png" width="100" height="100" alt="Team Vecna"><br>
+        <img src="github/assets/icon.jpg" width="100" height="100" alt="Team Vecna"><br>
         <b>Team Vecna</b>
       </td>
     </tr>
