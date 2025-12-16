@@ -35,19 +35,19 @@
 <div align="center">
   <table>
     <tr>
-      <td align="center" width="200">
+      <td align="center" width="500">
         <img src="github/assets/bukh.jpg" width="400" height="400" alt="Bukhari"><br>
         <b>MOHAMAD BUKHARI BIN<br>AHMAD HUZAIRI</b><br>
         <code>2024916761</code><br>
         <sub>Backend & Cloud Infrastructure</sub>
       </td>
-      <td align="center" width="200">
+      <td align="center" width="500">
         <img src="github/assets/zul.jpg" width="400" height="400" alt="Zulkarnain"><br>
         <b>MUHAMAD ZULKARNAIN BIN<br>SAMSUDIN</b><br>
         <code>2024793133</code><br>
         <sub>Frontend & Beta Tester</sub>
       </td>
-      <td align="center" width="200">
+      <td align="center" width=500">
         <img src="github/assets/aqil.jpg" width="400" height="400" alt="Aqil"><br>
         <b>AQIL IMRAN BIN<br>NORHIDZAM</b><br>
         <code>2024779269</code><br>
