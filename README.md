@@ -2,17 +2,17 @@
 <p align="center"><i>A Secure Property Rental Platform with DevSecOps Integration</i></p>
 
 <div align="center">
-  <img src="github/assets/LogoUiTM.png" width="500" height="500" alt="UiTM Logo"><br>
+  <img src="github/assets/LogoUiTM.png" width="550" height="550" alt="UiTM Logo"><br>
   <b>UiTM Tapah</b>
   <br><br>
   <hr width="50%">
   <br>
-  <img src="github/assets/logo.png" width="500" height="500" alt="RentVerse Logo"><br>
+  <img src="github/assets/logo.png" width="250" height="250" alt="RentVerse Logo"><br>
   <i>Building the Future Through Innovation</i>
   <br><br>
   <hr width="50%">
   <br>
-  <img src="github/assets/icon.jpg" width="500" height="500" alt="Team Vecna"><br>
+  <img src="github/assets/icon.jpg" width="250" height="250" alt="Team Vecna"><br>
   <b>Team Vecna</b>
 </div>
 
