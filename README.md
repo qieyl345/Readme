@@ -2,15 +2,15 @@
   <table>
     <tr>
       <td align="center" width="200">
-        <img src="github/assets/LogoUiTM.png" width="100" height="100" alt="UiTM Logo"><br>
+        <img src="github/assets/LogoUiTM.png" width="300" height="300" alt="UiTM Logo"><br>
         <b>UiTM Tapah</b>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/logo.png" width="120" height="120" alt="RentVerse Logo"><br>
+        <img src="github/assets/logo.png" width="300" height="300" alt="RentVerse Logo"><br>
         <i>Building the Future Through Innovation</i>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/icon.jpg" width="100" height="100" alt="Team Vecna"><br>
+        <img src="github/assets/icon.jpg" width="300" height="300" alt="Team Vecna"><br>
         <b>Team Vecna</b>
       </td>
     </tr>
@@ -38,22 +38,22 @@
   <table>
     <tr>
       <td align="center" width="250">
-        <img src="github/assets/bukh.jpg" width="300" height="300" style="border-radius: 50%; object-fit: cover;"><br>
+        <img src="github/assets/bukh.jpg" width="350" height="350" style="border-radius: 50%; object-fit: cover;"><br>
         <b>MOHAMAD BUKHARI BIN<br>AHMAD HUZAIRI</b><br>
         <code>2024916761</code><br>
         <i>Backend & Cloud Infrastructure</i>
       </td>
       <td align="center" width="250">
-        <img src="github/assets/zul.jpg" width="300" height="300" style="border-radius: 50%; object-fit: cover;"><br>
+        <img src="github/assets/zul.jpg" width="350" height="350" style="border-radius: 50%; object-fit: cover;"><br>
         <b>MUHAMAD ZULKARNAIN BIN<br>SAMSUDIN</b><br>
         <code>2024793133</code><br>
-        <i>Frontend & Mobile Development</i>
+        <i>Frontend & Beta Tester</i>
       </td>
       <td align="center" width="250">
-        <img src="github/assets/aqil.jpg" width="300" height="300" style="border-radius: 50%; object-fit: cover;"><br>
+        <img src="github/assets/aqil.jpg" width="350" height="350" style="border-radius: 50%; object-fit: cover;"><br>
         <b>AQIL IMRAN BIN<br>NORHIDZAM</b><br>
         <code>2024779269</code><br>
-        <i>Security Lead & AI Integration</i>
+        <i>Security Lead</i>
       </td>
     </tr>
   </table>
