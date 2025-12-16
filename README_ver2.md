@@ -523,46 +523,88 @@ flowchart TD
 ## 📦 Quick Start
 
 ### Prerequisites
-- Node.js 18+
-- PostgreSQL 15+
-- Python 3.9+ (for AI service)
+
+| Requirement | Version | Purpose |
+|-------------|---------|---------|
+| Node.js | 18+ | Backend & Frontend runtime |
+| PostgreSQL | 15+ | Database |
+| Python | 3.9+ | AI service (optional) |
+| npm/pnpm | Latest | Package manager |
 
 ### Installation
 
+#### 1️⃣ Clone Repository
 ```bash
-# Clone repository
 git clone <repository-url>
 cd uitm-devops-challenge_VECNA-main
+```
 
-# Backend setup
+#### 2️⃣ Backend Setup
+```bash
 cd rentverse-backend
 npm install
-cp .env.example .env
-npx prisma migrate dev
-npm run dev
+cp .env.example .env    # Configure environment variables
+npx prisma migrate dev  # Run database migrations
+npx prisma db seed      # Seed sample data (optional)
+npm run dev             # Start on http://localhost:3000
+```
 
-# Frontend setup (new terminal)
+#### 3️⃣ Frontend Setup (New Terminal)
+```bash
 cd rentverse-frontend
 npm install
-npm run dev
+npm run dev             # Start on http://localhost:3001
+```
 
-# AI service (optional)
+#### 4️⃣ AI Service Setup (Optional)
+```bash
 cd rentverse-ai-service
 pip install -r requirements.txt
-python -m uvicorn rentverse.main:app --reload
+python -m uvicorn rentverse.main:app --reload  # Start on http://localhost:8000
 ```
 
 ### Environment Variables
 
+#### Backend (`rentverse-backend/.env`)
+
 ```env
-# Backend (.env)
+# Database
 DATABASE_URL=postgresql://user:password@localhost:5432/rentverse
-JWT_SECRET=your-secret-key
+
+# Authentication
+JWT_SECRET=your-super-secret-jwt-key
+SESSION_SECRET=your-session-secret
+
+# Email Service (Gmail)
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
+
+# Cloudinary (Media Storage)
 CLOUD_CLOUD_NAME=your-cloudinary-name
-CLOUD_API_KEY=your-cloudinary-key
-CLOUD_API_SECRET=your-cloudinary-secret
+CLOUD_API_KEY=your-cloudinary-api-key
+CLOUD_API_SECRET=your-cloudinary-api-secret
+
+# Google OAuth (Optional)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# AI Service
+AI_SERVICE_URL=http://localhost:8000
+
+# Server
+PORT=3000
+NODE_ENV=development
+BASE_URL=http://localhost:3000
+FRONTEND_URL=http://localhost:3001
+```
+
+#### Frontend (`rentverse-frontend/.env.local`)
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_MAPTILER_KEY=your-maptiler-api-key
+```
+
 ---
 
 ## 🔌 API Endpoints Reference
