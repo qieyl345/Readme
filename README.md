@@ -1,11 +1,11 @@
 <div align="center">
-  <img src="github/assets/LogoUiTM.png" width="150" height="150" alt="UiTM Logo"><br>
+  <img src="github/assets/LogoUiTM.png" width="250" height="250" alt="UiTM Logo"><br>
   <b>UiTM Tapah</b>
   <br><br>
-  <img src="github/assets/logo.png" width="200" height="200" alt="RentVerse Logo"><br>
+  <img src="github/assets/logo.png" width="250" height="250" alt="RentVerse Logo"><br>
   <i>Building the Future Through Innovation</i>
   <br><br>
-  <img src="github/assets/icon.jpg" width="120" height="120" alt="Team Vecna"><br>
+  <img src="github/assets/icon.jpg" width="250" height="250" alt="Team Vecna"><br>
   <b>Team Vecna</b>
 </div>
 
