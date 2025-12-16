@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --background: #ffffff;
+    --foreground: #171717;
+
+    /* Teal color scheme */
+    --teal-50: #F1FCF8;
+    --teal-100: #D1F6EB;
+    --teal-200: #A3ECD9;
+    --teal-300: #6EDAC1;
+    --teal-400: #40C1A8;
+    --teal-500: #26A68F;
+    --teal-600: #1C8574;
+    --teal-700: #1A6B5E;
+    --teal-800: #1A554E;
+    --teal-900: #1A4741;
+    --teal-950: #0B3531;
+
+    /* Orange color scheme */
+    --orange-50: #FFF4ED;
+    --orange-100: #FFE6D5;
+    --orange-200: #FEC9AA;
+    --orange-300: #FEA273;
+    --orange-400: #FC713B;
+    --orange-500: #FA4F19;
+    --orange-600: #EB320B;
+    --orange-700: #C3220B;
+    --orange-800: #9B1D11;
+    --orange-900: #7C1B12;
+    --orange-950: #430A07;
+
+    /* Slate color scheme */
+    --slate-50: #F8FAFC;
+    --slate-100: #F1F5F9;
+    --slate-200: #E2E8F0;
+    --slate-300: #CAD5E2;
+    --slate-400: #90A1B9;
+    --slate-500: #62748E;
+    --slate-600: #45556C;
+    --slate-700: #314158;
+    --slate-800: #1D293D;
+    --slate-900: #0F172B;
+    --slate-950: #020618;
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+}
+
+/* Custom utility classes for teal colors */
+@layer utilities {
+    .text-teal-50 { color: var(--teal-50); }
+    .text-teal-100 { color: var(--teal-100); }
+    .text-teal-200 { color: var(--teal-200); }
+    .text-teal-300 { color: var(--teal-300); }
+    .text-teal-400 { color: var(--teal-400); }
+    .text-teal-500 { color: var(--teal-500); }
+    .text-teal-600 { color: var(--teal-600); }
+    .text-teal-700 { color: var(--teal-700); }
+    .text-teal-800 { color: var(--teal-800); }
+    .text-teal-900 { color: var(--teal-900); }
+    .text-teal-950 { color: var(--teal-950); }
+
+    .bg-teal-50 { background-color: var(--teal-50); }
+    .bg-teal-100 { background-color: var(--teal-100); }
+    .bg-teal-200 { background-color: var(--teal-200); }
+    .bg-teal-300 { background-color: var(--teal-300); }
+    .bg-teal-400 { background-color: var(--teal-400); }
+    .bg-teal-500 { background-color: var(--teal-500); }
+    .bg-teal-600 { background-color: var(--teal-600); }
+    .bg-teal-700 { background-color: var(--teal-700); }
+    .bg-teal-800 { background-color: var(--teal-800); }
+    .bg-teal-900 { background-color: var(--teal-900); }
+    .bg-teal-950 { background-color: var(--teal-950); }
+}

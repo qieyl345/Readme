@@ -484,69 +484,126 @@ flowchart LR
 
 ## 🛡️ Core Development Modules (Module 1-6)
 
+> **Technical Documentation** - All security modules implemented based on actual codebase analysis.
+
 ### 🟢 Module 1: Secure Login & MFA 🔐
 
-**Description:** Create MFA/OTP-based login with role-based access.  
-**Security Focus:** Authentication & Authorization (OWASP M1–M3)
+**Description:** Role-based MFA/OTP login with device verification and suspicious activity detection.  
+**Security Focus:** Authentication & Authorization (OWASP M1–M3)  
+**Key Files:** `src/services/enhancedMFA.service.js`, `src/services/fastOTPService.js`
 
-#### Implementation Details
+#### Role-Based MFA Policies
 
-##### 🔐 Multi-Factor Authentication (MFA/OTP)
-
-| Feature | Implementation |
-|---------|----------------|
-| **OTP Generation** | Cryptographically secure 6-digit OTP codes using `crypto.randomBytes()` |
-| **OTP Hashing** | OTPs are stored hashed using bcrypt for secure storage |
-| **Expiry** | OTPs expire after 5 minutes |
-| **Rate Limiting** | Maximum 5 OTP verification attempts to prevent brute force |
-
-**Key Files:**
-- `src/services/otp.service.js` - OTP generation, verification, and management
-- `src/services/email.service.js` - OTP email delivery with styled templates
+| Role | MFA Required | Session Timeout | Max Failed Attempts | Login Hours | Device Verification |
+|------|--------------|-----------------|---------------------|-------------|---------------------|
+| **ADMIN** | ✅ Yes | 15 min | 3 attempts | 6 AM - 10 PM | ✅ Required |
+| **LANDLORD** | ✅ Yes | 30 min | 5 attempts | 5 AM - 11 PM | ✅ Required |
+| **USER** | ❌ Optional | 60 min | 5 attempts | 24/7 | ❌ Optional |
 
 ```javascript
-// OTP Generation (Cryptographically Secure)
-generateOtpCode() {
-    const randomBytes = crypto.randomBytes(4);
-    const randomNumber = randomBytes.readUInt32BE(0);
-    return (randomNumber % 1000000).toString().padStart(6, '0');
-}
-```
-
-##### 👤 Role-Based Access Control (RBAC)
-
-| Feature | Implementation |
-|---------|----------------|
-| **Roles** | USER (tenant), ADMIN (administrator) |
-| **Middleware** | `authorize()` middleware enforces role-based access |
-| **Logging** | Unauthorized access attempts are logged to security logs |
-
-**Key Files:** `src/middleware/auth.js` - JWT authentication and role authorization
-
-```javascript
-// Role Authorization Middleware
-const authorize = (...roles) => {
-    return (req, res, next) => {
-        if (!roles.includes(req.user.role)) {
-            securityLogger.logSuspiciousActivity(req, 'Unauthorized access attempt');
-            return res.status(403).json({ message: 'Insufficient permissions.' });
-        }
-        next();
-    };
+// Role-Based MFA Policy Configuration (enhancedMFA.service.js)
+roleBasedMFAPolicies = {
+  ADMIN: {
+    requireMFA: true,
+    allowedMethods: ['TOTP', 'SMS', 'EMAIL'],
+    sessionTimeout: 15, // minutes
+    maxFailedAttempts: 3,
+    allowedLoginHours: { start: 6, end: 22 },
+    requireDeviceVerification: true
+  },
+  LANDLORD: {
+    requireMFA: true,
+    allowedMethods: ['TOTP', 'EMAIL'],
+    sessionTimeout: 30,
+    maxFailedAttempts: 5,
+    requireDeviceVerification: true
+  },
+  USER: {
+    requireMFA: false,
+    sessionTimeout: 60,
+    requireDeviceVerification: false
+  }
 };
 ```
 
-##### 🔑 OAuth Integration
-- **Google OAuth:** Full integration with Google Sign-In
-- **Deep Linking:** Mobile app support via custom URL scheme (`rentverseclarity://`)
-- **Security Alerts:** Email notifications sent for OAuth logins
+#### Multi-Factor Authentication Features
 
-##### 🚫 Account Lockout
+| Feature | Implementation |
+|---------|----------------|
+| **OTP Generation** | Speakeasy TOTP with 5-minute step window |
+| **OTP Delivery** | Parallel email + SMS delivery via `fastOTPService.js` |
+| **TOTP Authenticator** | QR code generation for Google Authenticator |
+| **Backup Codes** | 10 recovery codes generated on MFA setup |
+| **Expiry** | Role-based (15-60 minutes based on user role) |
+
+#### Fast OTP Service (`fastOTPService.js`)
+
+```javascript
+// High-performance OTP with parallel delivery
+async sendOTP(email, otp, options = {}) {
+  const deliveryPromises = [];
+  
+  // Email delivery (primary)
+  deliveryPromises.push(this.sendOTPEmail(email, otp, deliveryId));
+
+  // SMS delivery (backup, if configured)
+  if (this.smsProvider && options.sendSMS) {
+    deliveryPromises.push(this.sendOTPSMS(phoneNumber, otp, deliveryId));
+  }
+
+  // Wait for all delivery methods in parallel
+  const deliveryResults = await Promise.all(deliveryPromises);
+  return { success: deliveryResults.filter(r => r.success).length > 0 };
+}
+```
+
+#### Suspicious Activity Detection
+
+```javascript
+// Risk score calculation for login attempts
+async detectSuspiciousActivity(user) {
+  let riskScore = 0;
+  let reasons = [];
+
+  // Failed attempts check (+0.3)
+  if (user.loginAttempts > 0) {
+    riskScore += 0.3;
+    reasons.push('Previous failed attempts');
+  }
+
+  // Rapid successive logins (+0.2)
+  const hoursSinceLastLogin = (Date.now() - user.lastLoginAt) / (1000 * 60 * 60);
+  if (hoursSinceLastLogin < 1) {
+    riskScore += 0.2;
+    reasons.push('Rapid successive login attempts');
+  }
+
+  // Outside normal hours (+0.4)
+  if (currentHour < policy.allowedLoginHours.start) {
+    riskScore += 0.4;
+    reasons.push('Login outside normal hours');
+  }
+
+  // Block if risk score > 0.8
+  return { riskScore, blocked: riskScore > 0.8, reasons };
+}
+```
+
+| Risk Factor | Points Added | Description |
+|-------------|--------------|-------------|
+| Previous Failed Attempts | +0.3 | User has failed login attempts |
+| Rapid Logins | +0.2 | Login within 1 hour of last attempt |
+| Outside Normal Hours | +0.4 | Login outside configured hours |
+| **Block Threshold** | **> 0.8** | User login blocked |
+
+#### Account Lockout
+
 | Feature | Value |
 |---------|-------|
-| Max Attempts | 5 failed login attempts |
+| Max Attempts | Role-based (3 for ADMIN, 5 for others) |
 | Lockout Duration | 15 minutes |
-| Notification | Account lock alerts sent via email |
+| Notification | Security alert email sent |
+
 
 ##### 🔄 MFA Toggle (User-Controlled)
 - **Enable MFA:** One-click enable from Security Settings
@@ -562,152 +619,279 @@ const authorize = (...roles) => {
 
 ### 🔵 Module 2: Secure API Gateway 🔒
 
-**Description:** Apply HTTPS, JWT tokens, rate-limiting, and access validation.  
-**Security Focus:** Secure Communication (OWASP M5–M6)
+**Description:** Multi-tier rate limiting, security headers, and request validation.  
+**Security Focus:** Secure Communication (OWASP M5–M6)  
+**Key Files:** `src/middleware/rateLimiter.js`, `src/middleware/security.js`
 
-#### Implementation Details
-
-##### 🔒 JWT Authentication
-
-| Feature | Implementation |
-|---------|----------------|
-| Token Blacklist | Tokens can be invalidated on logout |
-| Token Expiry | Configurable expiration (default: 7 days) |
-| Secure Headers | Authorization header validation |
-
-**Key Files:**
-- `src/middleware/auth.js` - JWT verification with blacklist support
-- `src/services/tokenBlacklist.js` - Token invalidation management
-
-```javascript
-// JWT Verification with Blacklist Check
-if (isBlacklisted(token)) {
-    return res.status(401).json({ message: 'Token has been revoked.' });
-}
-const decoded = jwt.verify(token, process.env.JWT_SECRET);
-```
-
-##### ⏱️ Rate Limiting
+#### Multi-Tier Rate Limiting (`rateLimiter.js`)
 
 | Limiter Type | Limit | Window | Purpose |
 |--------------|-------|--------|---------|
-| Global | 100 requests | 15 min | DDoS prevention |
-| Auth | 5 attempts | 15 min | Brute force prevention |
-| OTP | 5 attempts | 5 min | OTP abuse prevention |
-| Strict | 3 requests | 1 min | Sensitive operations |
-| API | 2000 requests | 15 min | General API protection |
+| **General** | 100 requests | 15 min | Standard API protection |
+| **Login** | 5 attempts | 15 min | Brute force prevention |
+| **Register** | 3 attempts | 1 hour | Registration abuse |
+| **OTP** | 3 requests | 10 min | OTP flooding prevention |
+| **Admin** | 50 requests | 15 min | Admin endpoint protection |
+| **Upload** | 10 uploads | 1 hour | File upload control |
+| **Search** | 200 requests | 15 min | Search abuse prevention |
+| **Password Reset** | 3 requests | 1 hour | Reset abuse prevention |
 
-**Key Files:** `src/middleware/rateLimit.js` - Multiple rate limiters for different endpoints
+```javascript
+// Rate Limiter Configuration (rateLimiter.js)
+const rateLimiters = {
+  general: createRateLimiter({ windowMs: 15 * 60 * 1000, max: 100 }),
+  login: createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5, skipSuccessfulRequests: true }),
+  otp: createRateLimiter({ windowMs: 10 * 60 * 1000, max: 3 }),
+  admin: createRateLimiter({ windowMs: 15 * 60 * 1000, max: 50 }),
+  upload: createRateLimiter({ windowMs: 60 * 60 * 1000, max: 10 }),
+  passwordReset: createRateLimiter({ windowMs: 60 * 60 * 1000, max: 3 })
+};
+```
 
-##### 🛡️ Security Middleware Stack
+#### Security Middleware Stack (`security.js`)
 
 | Middleware | Purpose |
 |------------|---------|
-| Helmet.js | Security headers (XSS, CSP, HSTS) |
-| CORS | Configurable cross-origin resource sharing |
-| XSS Protection | Request sanitization via xss library |
-| SQL Injection Detection | Pattern-based detection and logging |
+| **Helmet.js** | Security headers (XSS, CSP, HSTS, frame protection) |
+| **HTTPS Enforcement** | Redirect HTTP to HTTPS for secure paths |
+| **XSS Protection** | Null byte removal from request bodies |
+| **SQL Injection Detection** | Pattern-based detection with logging |
+| **CORS Config** | Allowlist-based origin validation |
+| **Request Size Limit** | 10MB maximum request size |
 
-**Key Files:**
-- `src/middleware/requestValidator.js` - XSS sanitization and injection detection
-- `src/app.js` - Security middleware configuration
+```javascript
+// Content Security Policy (security.js)
+const securityHeaders = helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      connectSrc: ["'self'", "https:", "wss:"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"]
+    }
+  }
+});
+
+// SQL Injection Detection
+const sqlInjectionProtection = (req, res, next) => {
+  const dangerousPatterns = [
+    /(\%27)|(\')|(--)|(\%23)|(#)/gi,
+    /\w*((\%27)|(\'))union[^\w]*((\%27)|(\'))/gi
+  ];
+  
+  if (checkForSQL(req.body)) {
+    console.log(`🚨 SQL Injection attempt from IP: ${req.ip}`);
+    return res.status(400).json({ message: 'Invalid request format' });
+  }
+  next();
+};
+```
+
+#### CORS Configuration
+
+```javascript
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:3001', 
+           'https://rentverse-frontend.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-API-Key'],
+  exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
+  maxAge: 86400 // 24 hours
+};
+```
 
 ---
 
 ### 🟣 Module 3: Digital Agreement 📝
 
-**Description:** Add secure signature validation and access permissions.  
-**Security Focus:** Data Integrity & Workflow Validation
+**Description:** JWT-based digital signatures with replay attack prevention and document integrity verification.  
+**Security Focus:** Data Integrity & Workflow Validation  
+**Key Files:** `src/services/digitalSignatureValidation.js`, `src/services/pdfGeneration.service.js`
 
-#### Implementation Details
-
-##### ✍️ Digital Signature System
+#### Digital Signature System (`digitalSignatureValidation.js`)
 
 | Feature | Implementation |
 |---------|----------------|
-| SHA-256 Hashing | Signatures are hashed with timestamp and user info |
-| IP Address Logging | Signer's IP address recorded for audit |
-| Tamper Detection | Hash verification for document integrity |
-
-**Key Files:** `src/services/digitalAgreement.service.js` - Signature creation and verification
+| **JWT Signatures** | Cryptographic signing with 24-hour expiry |
+| **Nonce Generation** | 16-byte random nonce prevents replay attacks |
+| **Document Hash** | SHA-256 with secret salt for integrity |
+| **Permission Check** | Validates user access (owner, tenant, or signer) |
 
 ```javascript
-// Signature Hash Creation
-createSignatureHash(signature, timestamp, leaseId, userId) {
-    const data = `${signature}|${timestamp}|${leaseId}|${userId}`;
-    return crypto.createHash('sha256').update(data).digest('hex');
+// Generate Signature Payload (digitalSignatureValidation.js)
+generateSignaturePayload(documentId, userId, userRole, documentHash) {
+  const timestamp = Date.now();
+  const nonce = crypto.randomBytes(16).toString('hex');
+  
+  const payload = {
+    documentId, userId, userRole, documentHash,
+    timestamp, nonce, version: '1.0'
+  };
+
+  // Create JWT signature for tamper-proof verification
+  const signature = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: '24h',
+    issuer: 'rentverse-dsa'
+  });
+
+  return { payload, signature, expiresAt: new Date(timestamp + 24*60*60*1000) };
 }
 ```
 
-##### 📋 Workflow States
+#### Replay Attack Prevention
 
-| Status | Description |
-|--------|-------------|
-| DRAFT | Agreement created, not yet initiated |
-| PENDING_LANDLORD | Waiting for landlord signature |
-| PENDING_TENANT | Landlord signed, awaiting tenant |
-| COMPLETED | Both parties signed |
-| EXPIRED | Signing deadline passed |
-| CANCELLED | Agreement cancelled |
+```javascript
+// Validate signature and prevent reuse (digitalSignatureValidation.js)
+async validateSignature(signature, documentId, userId) {
+  const decoded = jwt.verify(signature, process.env.JWT_SECRET);
 
-##### 📝 Audit Trail
-- **Full Audit Logging:** Every action logged to `agreement_audit_logs`
-- **Actions Tracked:** CREATED, VIEWED, SIGNED, CANCELLED, DOWNLOADED, etc.
-- **Metadata:** IP address, timestamp, and performer recorded
+  // Check for existing signature with same nonce (replay attack)
+  const existingSignature = await prisma.digitalSignature.findFirst({
+    where: {
+      documentId, userId,
+      nonce: decoded.nonce,
+      createdAt: { gte: new Date(Date.now() - 10 * 60 * 1000) } // Last 10 min
+    }
+  });
 
-**Key Files:**
-- `src/routes/agreement.routes.js` - Agreement signing endpoints
-- Prisma model: `AgreementAuditLog`
+  if (existingSignature) {
+    throw new Error('Signature already used - potential replay attack');
+  }
+
+  return { valid: true, user: decoded.userId, timestamp: decoded.timestamp };
+}
+```
+
+#### PDF Generation with Document Hashing (`pdfGeneration.service.js`)
+
+```javascript
+// Generate and sign rental agreement PDF
+async generateAndUploadRentalAgreementPDF(leaseId) {
+  // 1. Get lease data with property, tenant, landlord info
+  const lease = await prisma.lease.findUnique({ where: { id: leaseId }, include: {...} });
+
+  // 2. Render HTML template with EJS
+  const html = ejs.render(templateContent, templateData);
+
+  // 3. Generate PDF with Puppeteer
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+
+  // 4. � Create SHA-256 document hash for digital signature
+  const digitalSignature = generateDocumentHash(pdfBuffer);
+  console.log(`✅ Document Secured. SHA-256 Hash: ${digitalSignature}`);
+
+  // 5. Save to database with signature
+  await prisma.rentalAgreement.create({
+    data: {
+      leaseId, pdfUrl, fileName, fileSize,
+      digitalSignature,  // SHA-256 hash
+      signedAt: new Date()
+    }
+  });
+}
+```
+
+#### Signature Audit Trail
+
+| Field | Description |
+|-------|-------------|
+| `signatureHash` | SHA-256 hash of the JWT signature |
+| `nonce` | Unique random value for replay prevention |
+| `ipAddress` | Signer's IP address |
+| `userAgent` | Signer's browser/device info |
+| `status` | PENDING, SIGNED, REJECTED |
+| `metadata` | Role, timestamp, version info |
 
 ---
 
 ### 🟠 Module 4: Smart Notification & Alert System 🔔
 
-**Description:** Log user activities and alert suspicious login patterns.  
-**Security Focus:** DevSecOps Monitoring & Incident Detection
+**Description:** AI-powered security anomaly detection with automated alert system.  
+**Security Focus:** DevSecOps Monitoring & Incident Detection  
+**Key Files:** `src/services/securityAnomalyDetection.js`, `src/services/enhancedEmailService.js`
 
-#### Implementation Details
+#### Security Anomaly Detection (`securityAnomalyDetection.js`)
 
-##### 🚨 Security Alert Types
+| Anomaly Type | Severity | Trigger | Auto-Alert |
+|--------------|----------|---------|------------|
+| `FAILED_LOGIN` | HIGH | 5+ failed OTP attempts in 15 min | ✅ Yes |
+| `MULTIPLE_FAILED_LOGINS` | HIGH | 3+ failed logins in 15 min | ✅ Yes |
+| `UNUSUAL_ACCESS_TIME` | MEDIUM | Login outside 11 PM - 6 AM | ❌ Log only |
+| `MULTIPLE_SESSIONS` | MEDIUM | Multiple logins within 5 min | ❌ Log only |
+| `API_ABUSE` | HIGH | Rate limit breaches | ✅ Yes |
+| `BRUTE_FORCE` | CRITICAL | Sustained attack pattern | ✅ Yes |
 
-| Alert Type | Trigger | Email Sent |
-|------------|---------|------------|
-| NEW_DEVICE | Login from unrecognized device | ✅ Yes |
-| MULTIPLE_FAILURES | 3+ failed logins in 5 minutes | ✅ Yes |
-| ACCOUNT_LOCKED | Account locked after max attempts | ✅ Yes |
-| SUSPICIOUS_TIMING | Login between 2-5 AM | ❌ No |
-| PASSWORD_CHANGED | Password update | ✅ Yes |
-
-**Key Files:** `src/services/securityAlert.service.js` - Alert creation and email dispatch
+#### Anomaly Thresholds Configuration
 
 ```javascript
-// New Device Alert
-async function alertNewDevice(userId, deviceInfo) {
-    return createAlert({
-        userId,
-        type: 'NEW_DEVICE',
-        title: 'New Device Login Detected',
-        message: `A new device was used: ${deviceInfo.browser} on ${deviceInfo.os}`,
-        sendEmail: true,
-    });
+// Security Anomaly Thresholds (securityAnomalyDetection.js)
+anomalyThresholds = {
+  failedLogins: 3,           // Failed logins before flagging
+  failedOTPs: 5,             // Failed OTP attempts before flagging
+  unusualHours: { start: 23, end: 6 },  // 11 PM - 6 AM
+  locationChangeThreshold: 100,  // KM difference for location change
+  apiRateLimitBreaches: 5,   // Rate limit hits
+  sessionDuration: { min: 300, max: 28800 }  // 5 min to 8 hours
+};
+```
+
+#### AI-Powered Pattern Analysis
+
+```javascript
+// AI Service Integration for Anomaly Detection
+async analyzeWithAI(userData) {
+  const response = await axios.post(`${this.aiServiceUrl}/api/v1/anomaly/detect`, {
+    user_id: userData.userId,
+    user_email: userData.userEmail,
+    user_role: userData.userRole,
+    ip_address: userData.ipAddress,
+    user_agent: userData.userAgent,
+    login_success: userData.success,
+    recent_activity: userData.recentActivity,  // Last 24 hours
+    analysis_type: 'security'
+  });
+  return response.data;
 }
 ```
 
-##### 📊 Risk Scoring
+#### Anomaly Recording & Resolution
 
-| Factor | Points |
-|--------|--------|
-| New Device | +30 points |
-| Recent Failures | +10 per failure (max 30) |
-| Unusual Time | +15 points |
-| Suspicious IP | +25 points (5+ failures from same IP) |
+```javascript
+// Record anomalies to database
+await prisma.securityAnomaly.createMany({
+  data: anomalies.map(anomaly => ({
+    userId, type: anomaly.type,
+    severity: anomaly.severity,
+    description: anomaly.description,
+    ipAddress, userAgent,
+    metadata: anomaly.metadata,
+    resolved: false  // Requires admin resolution
+  }))
+});
 
-**Key Files:** `src/services/suspiciousActivity.service.js` - Risk calculation and pattern detection
+// Admin can resolve anomalies
+await prisma.securityAnomaly.update({
+  where: { id: anomalyId },
+  data: { resolved: true, resolvedAt: new Date() }
+});
+```
 
-##### 📧 Email Notifications
-- **OAuth Login Alerts:** Security alerts with red styling for Google/OAuth logins
-- **OTP Delivery:** Styled OTP emails with countdown timer
-- **MFA Status Changes:** Notifications when MFA is enabled/disabled
+#### High Severity Alert Workflow
+
+```mermaid
+flowchart LR
+    A[Anomaly Detected] --> B{Severity?}
+    B -->|HIGH/CRITICAL| C[Log to Console]
+    C --> D[Record in Database]
+    D --> E[Send Security Alert Email]
+    B -->|MEDIUM/LOW| F[Log Only]
+    F --> D
+```
 
 ---
 
@@ -755,52 +939,86 @@ Response: {
 
 ### 🔷 Module 6: CI/CD Security Testing (Bonus) ⚙️
 
-**Description:** Integrate GitHub Actions for static code analysis (SAST) and deployment checks.  
-**Security Focus:** Continuous Testing (DevSecOps)
-
-#### Implementation Details
-
-##### 🔬 Static Application Security Testing (SAST)
-
-| Tool | Purpose |
-|------|---------|
-| ESLint Security Scan | Code quality and security linting |
-| TypeScript Check | Type safety verification |
-| npm Audit | Critical vulnerability detection |
-
+**Description:** Automated security scanning pipeline with multi-tool analysis.  
+**Security Focus:** Continuous Testing (DevSecOps)  
 **Workflow File:** `.github/workflows/security-scan.yml`
 
-##### 🔍 CodeQL Analysis
-- **Language:** JavaScript/TypeScript
-- **Queries:** `security-extended`, `security-and-quality`
-- **Schedule:** Weekly on Mondays + on every push/PR
-- **SARIF Upload:** Results uploaded to GitHub Security tab
+#### Security Scanning Pipeline
 
-**Workflow File:** `.github/workflows/codeql-analysis.yml`
+```yaml
+# .github/workflows/security-scan.yml
+name: 🛡️ Security Testing (SAST) - Module 6
 
-##### 🕵️ Secret Detection
-- **Tool:** Gitleaks
-- **Scope:** Full repository history scan
-- **Trigger:** Every push and pull request
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
 
-##### 📦 Dependency Vulnerability Scan
-- **Tool:** Trivy
-- **Severity:** CRITICAL and HIGH
-- **Scope:** Filesystem scan of all dependencies
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📁 Checkout code
+      - name: 🔧 Setup Node.js 18
+      - name: 🔧 Setup Python 3.9
+      - name: 📦 Install dependencies (npm ci + pip)
+      - name: 🔍 Run Bandit (Python SAST)
+      - name: 🔍 Run Semgrep (JavaScript/TypeScript SAST)
+      - name: 🔍 Run CodeQL Analysis
+      - name: 🚫 Dependency Security Audit (npm audit + Safety)
+      - name: 🔑 Secret Detection (TruffleHog)
+      - name: 📊 Upload Security Reports
+      - name: ✅ Security Gate Check
+```
 
-##### 🏗️ Build Verification
-- **Backend:** Prisma generation + syntax check
-- **Frontend:** Next.js build verification
+#### Security Tools Matrix
 
-##### 📊 Security Summary
+| Tool | Purpose | Language | Report |
+|------|---------|----------|--------|
+| **Bandit** | Python SAST security linter | Python | JSON/TXT |
+| **Semgrep** | Multi-language SAST scanner | JS/TS | SARIF |
+| **CodeQL** | Semantic code analysis | JS/Python | SARIF |
+| **npm audit** | Node.js dependency vulnerabilities | Node.js | Console |
+| **Safety** | Python package vulnerabilities | Python | JSON |
+| **TruffleHog** | Secret/credential detection | All | Console |
 
-| Check | Status |
-|-------|--------|
-| Backend SAST | ✅ Completed |
-| Frontend SAST | ✅ Completed |
-| Secret Detection | ✅ Completed |
-| Dependency Scan | ✅ Completed |
-| CodeQL Analysis | ✅ Completed |
+#### Semgrep Rule Sets
+
+```yaml
+# Configured rule sets for comprehensive coverage
+config: >-
+  p/security-audit
+  p/secrets
+  p/owasp-top-ten
+  p/javascript
+  p/typescript
+```
+
+#### Security Gate Summary
+
+```bash
+# Generated in GITHUB_STEP_SUMMARY
+## 🛡️ Security Scan Results
+
+### ✅ Completed Security Checks:
+- Bandit (Python SAST)
+- Semgrep (JavaScript/TypeScript SAST)
+- CodeQL (Semantic Analysis)
+- Dependency Audit (npm audit)
+- Safety Check (Python packages)
+- Secret Detection
+
+### 🎯 Module 6 Status: **COMPLETE**
+
+**All 6 Security Modules Now Implemented:**
+1. ✅ Secure Login & MFA
+2. ✅ Secure API Gateway
+3. ✅ Digital Agreement (Mobile)
+4. ✅ Smart Notification & Alert System
+5. ✅ Activity Log Dashboard
+6. ✅ **CI/CD Security Testing** ← **IMPLEMENTED**
+```
 
 ---
 

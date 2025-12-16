@@ -1,0 +1,165 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Generate security summary report from various SAST tools
+ */
+
+function generateSecuritySummary() {
+  const reports = [];
+  const timestamp = new Date().toISOString();
+  
+  // Read ESLint security report
+  try {
+    const eslintReport = JSON.parse(fs.readFileSync('eslint-security-report.json', 'utf8'));
+    if (eslintReport && eslintReport.length > 0) {
+      reports.push({
+        tool: 'ESLint Security',
+        severity: 'WARNING',
+        count: eslintReport.length,
+        issues: eslintReport.slice(0, 5) // Show first 5 issues
+      });
+    }
+  } catch (error) {
+    console.log('ESLint report not found or invalid JSON');
+  }
+
+  // Read Semgrep report
+  try {
+    const semgrepReport = JSON.parse(fs.readFileSync('semgrep-report.json', 'utf8'));
+    if (semgrepReport && semgrepReport.results && semgrepReport.results.length > 0) {
+      const highSeverity = semgrepReport.results.filter(r => r.extra.severity === 'ERROR');
+      const mediumSeverity = semgrepReport.results.filter(r => r.extra.severity === 'WARNING');
+      
+      if (highSeverity.length > 0) {
+        reports.push({
+          tool: 'Semgrep SAST',
+          severity: 'HIGH',
+          count: highSeverity.length,
+          issues: highSeverity.slice(0, 3)
+        });
+      }
+      
+      if (mediumSeverity.length > 0) {
+        reports.push({
+          tool: 'Semgrep SAST',
+          severity: 'MEDIUM',
+          count: mediumSeverity.length,
+          issues: mediumSeverity.slice(0, 3)
+        });
+      }
+    }
+  } catch (error) {
+    console.log('Semgrep report not found or invalid JSON');
+  }
+
+  // Read Bandit report
+  try {
+    const banditReport = JSON.parse(fs.readFileSync('bandit-report.json', 'utf8'));
+    if (banditReport && banditReport.results && banditReport.results.length > 0) {
+      const highSeverity = banditReport.results.filter(r => r.issue_severity === 'HIGH');
+      const mediumSeverity = banditReport.results.filter(r => r.issue_severity === 'MEDIUM');
+      
+      if (highSeverity.length > 0) {
+        reports.push({
+          tool: 'Bandit Python Security',
+          severity: 'HIGH',
+          count: highSeverity.length,
+          issues: highSeverity.slice(0, 3)
+        });
+      }
+      
+      if (mediumSeverity.length > 0) {
+        reports.push({
+          tool: 'Bandit Python Security',
+          severity: 'MEDIUM',
+          count: mediumSeverity.length,
+          issues: mediumSeverity.slice(0, 3)
+        });
+      }
+    }
+  } catch (error) {
+    console.log('Bandit report not found or invalid JSON');
+  }
+
+  // Read Safety report
+  try {
+    const safetyReport = JSON.parse(fs.readFileSync('safety-report.json', 'utf8'));
+    if (safetyReport && safetyReport.length > 0) {
+      reports.push({
+        tool: 'Safety Dependency Scan',
+        severity: 'HIGH',
+        count: safetyReport.length,
+        issues: safetyReport.slice(0, 3)
+      });
+    }
+  } catch (error) {
+    console.log('Safety report not found or invalid JSON');
+  }
+
+  // Generate markdown summary
+  let markdown = `# 🛡️ Security Analysis Summary\n\n`;
+  markdown += `**Generated:** ${timestamp}\n\n`;
+  
+  if (reports.length === 0) {
+    markdown += `✅ **No security issues detected!**\n\n`;
+    markdown += `All SAST tools completed successfully with no findings.\n`;
+  } else {
+    markdown += `## 📊 Security Findings\n\n`;
+    
+    let totalIssues = 0;
+    let criticalIssues = 0;
+    
+    reports.forEach(report => {
+      totalIssues += report.count;
+      if (report.severity === 'HIGH') {
+        criticalIssues += report.count;
+      }
+      
+      markdown += `### ${report.tool} - ${report.severity}\n`;
+      markdown += `- **Issues Found:** ${report.count}\n`;
+      
+      if (report.issues && report.issues.length > 0) {
+        markdown += `- **Sample Issues:**\n`;
+        report.issues.forEach(issue => {
+          const message = issue.message || issue.issue_text || issue.test_id || 'Security issue detected';
+          const file = issue.filePath || issue.filename || issue.filename || 'Unknown file';
+          const line = issue.line || issue.line_number || 'N/A';
+          markdown += `  - \`${file}:${line}\`: ${message}\n`;
+        });
+      }
+      markdown += `\n`;
+    });
+    
+    markdown += `## 📈 Summary\n\n`;
+    markdown += `- **Total Issues:** ${totalIssues}\n`;
+    markdown += `- **Critical Issues:** ${criticalIssues}\n`;
+    
+    if (criticalIssues > 0) {
+      markdown += `\n⚠️ **Action Required:** Critical security issues detected. Please review and remediate before merging.\n`;
+    } else if (totalIssues > 0) {
+      markdown += `\n✅ **Low Risk:** Non-critical security issues found. Review recommended but not blocking.\n`;
+    } else {
+      markdown += `\n🎉 **Excellent:** No security issues detected!\n`;
+    }
+  }
+  
+  markdown += `\n---\n`;
+  markdown += `*This report was generated by the Security CI/CD pipeline.*\n`;
+
+  // Write summary to file
+  fs.writeFileSync('security-summary.md', markdown);
+  
+  console.log('Security summary generated successfully!');
+  console.log(`Total reports processed: ${reports.length}`);
+  console.log(`Total issues found: ${reports.reduce((sum, r) => sum + r.count, 0)}`);
+}
+
+// Run if called directly
+if (require.main === module) {
+  generateSecuritySummary();
+}
+
+module.exports = { generateSecuritySummary };

@@ -1,0 +1,84 @@
+/* CSS Safe Area Handling for Mobile Devices */
+
+/* Status bar safe area for iOS */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .status-bar-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .status-bar-safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .status-bar-safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .status-bar-safe-both {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Android status bar height calculation */
+@supports (padding-top: constant(safe-area-inset-top)) {
+  .status-bar-safe {
+    padding-top: constant(safe-area-inset-top);
+  }
+  
+  .status-bar-safe-top {
+    padding-top: constant(safe-area-inset-top);
+  }
+  
+  .status-bar-safe-bottom {
+    padding-bottom: constant(safe-area-inset-bottom);
+  }
+  
+  .status-bar-safe-both {
+    padding-top: constant(safe-area-inset-top);
+    padding-bottom: constant(safe-area-inset-bottom);
+  }
+}
+
+/* Fallback for devices without safe area support */
+@media (max-width: 768px) {
+  .status-bar-safe {
+    padding-top: 24px; /* Typical Android status bar height */
+  }
+  
+  .status-bar-safe-top {
+    padding-top: 24px;
+  }
+}
+
+/* Global styles for mobile apps */
+.mobile-app-container {
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height for mobile */
+}
+
+.app-content {
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Navigation bar safe area */
+.nav-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Header safe area */
+.header-safe {
+  padding-top: env(safe-area-inset-top);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+/* Modal and overlay safe areas */
+.modal-safe {
+  padding-top: env(safe-area-inset-top, 20px);
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  padding-left: env(safe-area-inset-left, 16px);
+  padding-right: env(safe-area-inset-right, 16px);
+}
