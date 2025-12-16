@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="github/assets/LogoUiTM.png" width="250" height="250" alt="UiTM Logo"><br>
+  <img src="github/assets/LogoUiTM.png" width="500" height="500" alt="UiTM Logo"><br>
   <b>UiTM Tapah</b>
   <br><br>
   <img src="github/assets/logo.png" width="250" height="250" alt="RentVerse Logo"><br>
@@ -178,4 +178,219 @@ flowchart TB
     GITHUB --> CODEQL
     GITHUB --> VERCEL
     GITHUB --> RENDER
+```
+
+### 🔐 Authentication Flow (MFA/OTP)
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 User
+    participant F as 🌐 Frontend
+    participant A as 🔐 Auth API
+    participant D as 🗄️ Database
+    participant E as 📧 Email Service
+
+    U->>F: Enter email & password
+    F->>A: POST /auth/login
+    A->>D: Verify credentials
+    
+    alt Invalid Credentials
+        A-->>F: 401 Unauthorized
+        A->>D: Log failed attempt
+        D-->>A: Check attempt count
+        alt 5+ Failed Attempts
+            A->>D: Lock account 15 min
+            A->>E: Send lock notification
+        end
+    else Valid Credentials
+        A->>D: Check MFA status
+        alt MFA Enabled
+            A->>A: Generate 6-digit OTP
+            A->>D: Store hashed OTP
+            A->>E: Send OTP email
+            A-->>F: Require OTP verification
+            U->>F: Enter OTP code
+            F->>A: POST /auth/verify-otp
+            A->>D: Verify OTP hash
+            alt Valid OTP
+                A->>D: Log successful login
+                A->>D: Register device
+                A-->>F: Return JWT token
+            else Invalid OTP
+                A-->>F: 401 Invalid OTP
+            end
+        else MFA Disabled
+            A->>D: Log successful login
+            A-->>F: Return JWT token
+        end
+    end
+```
+
+### 🏠 Property Listing & Approval Flow
+
+```mermaid
+flowchart TD
+    subgraph Landlord["🏠 Landlord Actions"]
+        L1["Create Property Listing"]
+        L2["Upload Photos"]
+        L3["Set Price & Details"]
+        L4["Submit for Review"]
+    end
+
+    subgraph System["⚙️ System Processing"]
+        S1{"Auto-Review<br/>Enabled?"}
+        S2["RevAI Analysis"]
+        S3["Flag for<br/>Manual Review"]
+        S4["Create Pending<br/>Approval Record"]
+    end
+
+    subgraph Admin["👑 Admin Review"]
+        A1["View Pending Properties"]
+        A2["Review Details"]
+        A3{"Decision"}
+        A4["✅ Approve"]
+        A5["❌ Reject"]
+    end
+
+    subgraph Result["📋 Result"]
+        R1["Property Live<br/>on Platform"]
+        R2["Notify Landlord<br/>Approved"]
+        R3["Notify Landlord<br/>Rejected"]
+        R4["Property Hidden"]
+    end
+
+    L1 --> L2 --> L3 --> L4
+    L4 --> S1
+    S1 -->|Yes| S2
+    S1 -->|No| S4
+    S2 -->|Pass| A4
+    S2 -->|Fail/Uncertain| S3
+    S3 --> S4
+    S4 --> A1
+    A1 --> A2 --> A3
+    A3 -->|Approve| A4
+    A3 -->|Reject| A5
+    A4 --> R1 --> R2
+    A5 --> R4 --> R3
+```
+
+### 📝 Digital Agreement Signing Flow
+
+```mermaid
+sequenceDiagram
+    participant LL as 🏠 Landlord
+    participant T as 👤 Tenant
+    participant API as ⚙️ Backend
+    participant DB as 🗄️ Database
+    participant PDF as 📄 PDF Service
+    participant CDN as ☁️ Cloudinary
+
+    LL->>API: Create Lease Agreement
+    API->>DB: Store lease terms
+    API->>PDF: Generate PDF
+    PDF->>CDN: Upload PDF
+    API-->>LL: Agreement ready to sign
+
+    LL->>API: Sign agreement (canvas signature)
+    API->>API: Create SHA-256 signature hash
+    API->>DB: Store landlord signature
+    API->>DB: Update status: PENDING_TENANT
+    API-->>T: Notify: Please sign agreement
+
+    T->>API: View agreement
+    API-->>T: Return PDF + details
+    T->>API: Sign agreement (canvas signature)
+    API->>API: Create SHA-256 signature hash
+    API->>DB: Store tenant signature
+    API->>DB: Update status: COMPLETED
+    API->>PDF: Generate final signed PDF
+    PDF->>CDN: Upload final PDF
+    API-->>LL: Notify: Agreement completed
+    API-->>T: Notify: Agreement completed
+```
+
+### 🛡️ Security Monitoring Flow
+
+```mermaid
+flowchart LR
+    subgraph Events["📥 Security Events"]
+        E1["Login Attempt"]
+        E2["Failed Login"]
+        E3["New Device"]
+        E4["Password Change"]
+    end
+
+    subgraph Analysis["🔍 Risk Analysis"]
+        A1["Calculate Risk Score"]
+        A2{"Risk >= 50?"}
+        A3["Log Normal Activity"]
+        A4["Flag High Risk"]
+    end
+
+    subgraph Response["⚡ Auto Response"]
+        R1["Create Security Alert"]
+        R2["Send Email Notification"]
+        R3["Lock Account<br/>if 5+ failures"]
+    end
+
+    subgraph Dashboard["📊 Admin Dashboard"]
+        D1["Real-time Statistics"]
+        D2["Login History"]
+        D3["Alert Management"]
+        D4["User Investigation"]
+    end
+
+    E1 --> A1
+    E2 --> A1
+    E3 --> A1
+    E4 --> R1
+    A1 --> A2
+    A2 -->|No| A3
+    A2 -->|Yes| A4
+    A4 --> R1
+    R1 --> R2
+    E2 --> R3
+    A3 --> D1
+    A4 --> D1
+    R1 --> D3
+    D1 --> D2
+    D3 --> D4
+```
+
+### 🔄 CI/CD Security Pipeline
+
+```mermaid
+flowchart LR
+    subgraph Trigger["🚀 Trigger"]
+        T1["Push to Main"]
+        T2["Pull Request"]
+    end
+
+    subgraph SAST["🔬 SAST Checks"]
+        S1["ESLint Analysis"]
+        S2["TypeScript Check"]
+        S3["npm Audit"]
+    end
+
+    subgraph Security["🔐 Security Scans"]
+        SEC1["CodeQL Analysis"]
+        SEC2["Gitleaks<br/>Secret Detection"]
+        SEC3["Trivy<br/>Vulnerability Scan"]
+    end
+
+    subgraph Build["🏗️ Build"]
+        B1["Backend Build"]
+        B2["Frontend Build"]
+    end
+
+    subgraph Deploy["📦 Deploy"]
+        D1["Vercel<br/>Frontend"]
+        D2["Render<br/>Backend"]
+    end
+
+    T1 --> SAST
+    T2 --> SAST
+    SAST --> Security
+    Security --> Build
+    Build --> Deploy
 ```
