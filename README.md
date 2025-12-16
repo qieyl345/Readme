@@ -2,17 +2,17 @@
 <p align="center"><i>A Secure Property Rental Platform with DevSecOps Integration</i></p>
 
 <div align="center">
-  <img src="github/assets/LogoUiTM.png" width="200" height="200" alt="UiTM Logo"><br>
+  <img src="github/assets/LogoUiTM.png" width="500" height="500" alt="UiTM Logo"><br>
   <b>UiTM Tapah</b>
   <br><br>
   <hr width="50%">
   <br>
-  <img src="github/assets/logo.png" width="250" height="250" alt="RentVerse Logo"><br>
+  <img src="github/assets/logo.png" width="500" height="500" alt="RentVerse Logo"><br>
   <i>Building the Future Through Innovation</i>
   <br><br>
   <hr width="50%">
   <br>
-  <img src="github/assets/icon.jpg" width="150" height="150" alt="Team Vecna"><br>
+  <img src="github/assets/icon.jpg" width="500" height="500" alt="Team Vecna"><br>
   <b>Team Vecna</b>
 </div>
 
@@ -36,19 +36,19 @@
   <table>
     <tr>
       <td align="center" width="200">
-        <img src="github/assets/bukh.jpg" width="150" height="150" alt="Bukhari"><br>
+        <img src="github/assets/bukh.jpg" width="400" height="400" alt="Bukhari"><br>
         <b>MOHAMAD BUKHARI BIN<br>AHMAD HUZAIRI</b><br>
         <code>2024916761</code><br>
         <sub>Backend & Cloud Infrastructure</sub>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/zul.jpg" width="150" height="150" alt="Zulkarnain"><br>
+        <img src="github/assets/zul.jpg" width="400" height="400" alt="Zulkarnain"><br>
         <b>MUHAMAD ZULKARNAIN BIN<br>SAMSUDIN</b><br>
         <code>2024793133</code><br>
         <sub>Frontend & Beta Tester</sub>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/aqil.jpg" width="150" height="150" alt="Aqil"><br>
+        <img src="github/assets/aqil.jpg" width="400" height="400" alt="Aqil"><br>
         <b>AQIL IMRAN BIN<br>NORHIDZAM</b><br>
         <code>2024779269</code><br>
         <sub>Security Lead</sub>
