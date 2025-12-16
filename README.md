@@ -1,21 +1,27 @@
-Understood. I have preserved **100% of the original code** (including all diagrams, detailed module descriptions, and the innovation pool) and **only** modified the specific sections to reflect Team Vecna, the specific team members, and the required legal add-endums.
+Here is the **complete, raw code** for your `README.md`.
 
-Here is the **complete, full-length** `README.md` file. You can copy and paste this entire block to replace your current file.
+**Instructions:**
+
+1. **Copy** the code block below entirely.
+2. **Paste** it into your `README.md` file in Visual Studio Code.
+3. **Create** a folder named `github/assets/` in your project.
+4. **Add** your team member photos into that folder and name them `bukhari.png`, `zulkarnain.png`, and `aqil.png`.
+5. **Commit** and push to GitHub. It will display exactly as intended.
 
 ```markdown
 <div align="center">
   <table>
     <tr>
       <td align="center" width="200">
-        <img src="github/assets/uitm.png" width="100" height="100"><br>
+        <img src="github/assets/uitm.png" width="100" height="100" alt="UiTM Logo"><br>
         <b>UiTM Tapah</b>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/logo.png" width="120" height="120"><br>
+        <img src="github/assets/logo.png" width="120" height="120" alt="RentVerse Logo"><br>
         <i>Building the Future Through Innovation</i>
       </td>
       <td align="center" width="200">
-        <img src="github/assets/vecna_logo.png" width="100" height="100" alt="Vecna Logo"><br>
+        <img src="github/assets/vecna_logo.png" width="100" height="100" alt="Team Vecna"><br>
         <b>Team Vecna</b>
       </td>
     </tr>
@@ -29,11 +35,11 @@ Here is the **complete, full-length** `README.md` file. You can copy and paste t
 
 ## 📋 Challenge Submission Details
 
-**Challenge**: Mobile SecOps 21 Days Challenge
-**Organizer**: Metairflow R&D Sdn. Bhd.
+[cite_start]**Challenge**: Mobile SecOps 21 Days Challenge [cite: 11]
+**Organizer**: Metairflow R&D Sdn. [cite_start]Bhd. [cite: 1]
 **Team**: VECNA
 **Institution**: UiTM Tapah
-**Project Duration**: 27 November 2025 - 17 December 2025
+[cite_start]**Project Duration**: 27 November 2025 - 17 December 2025 [cite: 12, 13]
 
 ---
 
@@ -72,6 +78,7 @@ Here is the **complete, full-length** `README.md` file. You can copy and paste t
 |----------|------|
 | 🌐 **Live Website** | [https://rentverse-frontend-nine.vercel.app/](https://rentverse-frontend-nine.vercel.app/) |
 | 📱 **Mobile App (APK)** | [Download RentVerse APK](MobileAppBuild/rentverse-vecna.apk) |
+| 📚 **API Docs** | [Swagger Documentation](/docs) |
 
 ### 🧪 Test Admin Account
 
@@ -2067,12 +2074,16 @@ jobs:
 ---
 
 ##⚖️ Intellectual Property & Ownership**Proprietary Rights**:
-In compliance with the project engagement agreement, all deliverables, including source code, algorithms, designs, and documentation ("Work Product") produced within this repository are the **exclusive property of Metairflow R&D Sdn. Bhd.**.
+In compliance with the project engagement agreement, all deliverables, including source code, algorithms, designs, and documentation ("Work Product") produced within this repository are the exclusive property of Metairflow R&D Sdn. Bhd.. 
 
 **Usage Restrictions**:
 
 * This repository is submitted as part of the **Mobile SecOps 21 Days Challenge**.
+
+
 * Unauthorized reproduction, development of derivative solutions, or commercial use of this Work Product is strictly prohibited for **24 months** following the engagement without written consent from Metairflow R&D Sdn. Bhd..
+
+
 
 **Confidentiality**:
 This repository adheres to the Non-Disclosure Agreement (NDA). No internal trade secrets or proprietary algorithms of the Disclosing Party have been exposed in this public documentation.
@@ -2084,7 +2095,7 @@ All third-party libraries and open-source components used in this project are co
 
 <div align="center">
 <p><i>Built with ❤️ by Team Vecna for Mobile SecOps Challenge 2025</i></p>
-<p><i>Governed by the laws of Malaysia (Copyright Act 1987)</i></p>
+<p><i>Governed by the laws of Malaysia (Copyright Act 1987)</i> </p>
 </div>
 
 ```
