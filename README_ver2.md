@@ -1,19 +1,60 @@
-<h1 align="center">🏠 RentVerse - Secure Property Rental Platform</h1>
-<p align="center"><i>A DevSecOps-Integrated Mobile Application for Secure Property Rentals</i></p>
+<h1 align="center">🏠 RentVerse (Secured by Vecna)</h1>
+<p align="center"><i>A Secure Property Rental Platform with DevSecOps Integration</i></p>
 
 <div align="center">
-  <img src="github/assets/LogoUiTM.png" width="180" height="180" alt="UiTM Logo"><br>
-  <b>Universiti Teknologi MARA (UiTM) Tapah</b>
+  <img src="github/assets/LogoUiTM.png" width="550" height="550" alt="UiTM Logo"><br>
+  <b>UiTM Tapah</b>
   <br><br>
-  <hr width="40%">
+  <hr width="50%">
   <br>
-  <img src="github/assets/logo.png" width="220" height="220" alt="RentVerse Logo"><br>
-  <i>Secure. Smart. Seamless.</i>
+  <img src="github/assets/logo.png" width="250" height="250" alt="RentVerse Logo"><br>
+  <i>Building the Future Through Innovation</i>
   <br><br>
-  <hr width="40%">
+  <hr width="50%">
   <br>
-  <img src="github/assets/icon.jpg" width="140" height="140" alt="Team Vecna"><br>
-  <b>Team VECNA</b>
+  <img src="github/assets/icon.jpg" width="350" height="350" alt="Team Vecna"><br>
+  <b>Team Vecna</b>
+</div>
+
+---
+
+## 📋 Challenge Submission Details
+
+| Field | Details |
+|-------|---------|
+| **Challenge** | Mobile SecOps 21 Days Challenge |
+| **Organizer** | Metairflow R&D Sdn. Bhd. |
+| **Team** | VECNA |
+| **Institution** | UiTM Tapah |
+| **Project Duration** | 27 November 2025 - 17 December 2025 |
+
+---
+
+## 👥 Team Vecna Members
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="500">
+        <img src="github/assets/bukh.jpg" width="400" height="400" alt="Bukhari"><br>
+        <b>MOHAMAD BUKHARI BIN<br>AHMAD HUZAIRI</b><br>
+        <code>2024916761</code><br>
+        <sub>Backend & Cloud Infrastructure</sub>
+      </td>
+      <td align="center" width="500">
+        <img src="github/assets/zul.jpg" width="400" height="400" alt="Zulkarnain"><br>
+        <b>MUHAMAD ZULKARNAIN BIN<br>SAMSUDIN</b><br>
+        <code>2024793133</code><br>
+        <sub>Frontend & Beta Tester</sub>
+      </td>
+      <td align="center" width=500">
+        <img src="github/assets/aqil.jpg" width="400" height="400" alt="Aqil"><br>
+        <b>AQIL IMRAN BIN<br>NORHIDZAM</b><br>
+        <code>2024779269</code><br>
+        <sub>Security Lead</sub>
+      </td>
+    </tr>
+  </table>
 </div>
 
 ---
