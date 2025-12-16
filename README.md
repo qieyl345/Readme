@@ -12,7 +12,7 @@
   <br><br>
   <hr width="50%">
   <br>
-  <img src="github/assets/icon.jpg" width="250" height="250" alt="Team Vecna"><br>
+  <img src="github/assets/icon.jpg" width="350" height="350" alt="Team Vecna"><br>
   <b>Team Vecna</b>
 </div>
 
