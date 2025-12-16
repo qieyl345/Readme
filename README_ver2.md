@@ -59,47 +59,6 @@
 
 ---
 
-## 📋 Project Information
-
-| Field | Details |
-|-------|---------|
-| **Challenge** | Mobile SecOps 21 Days Challenge |
-| **Organizer** | Metairflow R&D Sdn. Bhd. |
-| **Team** | VECNA |
-| **Institution** | UiTM Tapah |
-| **Duration** | 27 November 2025 - 17 December 2025 |
-
----
-
-## 👥 Development Team
-
-<div align="center">
-  <table>
-    <tr>
-      <td align="center" width="220">
-        <img src="github/assets/bukh.jpg" width="120" height="120" alt="Bukhari"><br>
-        <b>Mohamad Bukhari Bin<br>Ahmad Huzairi</b><br>
-        <code>2024916761</code><br>
-        <sub>Backend & Cloud Infrastructure</sub>
-      </td>
-      <td align="center" width="220">
-        <img src="github/assets/zul.jpg" width="120" height="120" alt="Zulkarnain"><br>
-        <b>Muhamad Zulkarnain Bin<br>Samsudin</b><br>
-        <code>2024793133</code><br>
-        <sub>Frontend & Beta Testing</sub>
-      </td>
-      <td align="center" width="220">
-        <img src="github/assets/aqil.jpg" width="120" height="120" alt="Aqil"><br>
-        <b>Aqil Imran Bin<br>Norhidzam</b><br>
-        <code>2024779269</code><br>
-        <sub>Security Lead</sub>
-      </td>
-    </tr>
-  </table>
-</div>
-
----
-
 ## 🔗 Live Deployments
 
 | Platform | URL |
