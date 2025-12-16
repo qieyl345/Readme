@@ -205,8 +205,7 @@ sequenceDiagram
         A->>D: Log failed attempt
         D-->>A: Check attempt count
         alt 5+ Failed Attempts
-            A->>D: Lock account 15 min
-            A->>E: Send lock notification
+            A->>E: Send notification to admin
         end
     else Valid Credentials
         A->>D: Check MFA status
@@ -238,9 +237,14 @@ sequenceDiagram
 flowchart TD
     subgraph Landlord["🏠 Landlord Actions"]
         L1["Create Property Listing"]
-        L2["Upload Photos"]
-        L3["Set Price & Details"]
-        L4["Submit for Review"]
+        L2["Choose Property Type"]
+        L3["Select Location Inide Map"]
+        L4["Fill in Details Address"]
+        L5["Enter Property Details"]
+        L6["Upload Property Images"]
+        L7["Input Property Name"]
+        L8["Add Property Description"]
+        L9["Submit & Save"]
     end
 
     subgraph System["⚙️ System Processing"]
