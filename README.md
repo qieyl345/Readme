@@ -1641,23 +1641,6 @@ Schedule property viewings with landlords.
 
 </div>
 
-### 📊 Version Summary
-
-| Category | Technology | Version |
-|----------|------------|---------|
-| Runtime | Node.js | 20+ |
-| Backend Framework | Express.js | 4.18 |
-| Frontend Framework | Next.js | 16.0 |
-| UI Library | React | 19.1 |
-| Language | TypeScript | 5.x |
-| Styling | Tailwind CSS | 4.x |
-| State Management | Zustand | 5.0 |
-| Database ORM | Prisma | 5.3 |
-| Mobile | Capacitor | 8.0 |
-| Maps | MapTiler SDK | 3.8 |
-| PDF Generation | Puppeteer | 24.x |
-| Email | Nodemailer | 7.x |
-
 ---
 
 ## 📚 API Documentation
