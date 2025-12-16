@@ -38,13 +38,13 @@
   <table>
     <tr>
       <td align="center" width="250">
-        <img src="github/assets/bukh.jpg" width="120" height="120" style="border-radius: 50%; object-fit: cover;"><br>
+        <img src="github/assets/bukh.jpg" width="250" height="250" style="border-radius: 50%; object-fit: cover;"><br>
         <b>MOHAMAD BUKHARI BIN<br>AHMAD HUZAIRI</b><br>
         <code>2024916761</code><br>
         <i>Backend & Cloud Infrastructure</i>
       </td>
       <td align="center" width="250">
-        <img src="github/assets/zul.jpg" width="120" height="120" style="border-radius: 50%; object-fit: cover;"><br>
+        <img src="github/assets/zul.jpg" width="200" height="200" style="border-radius: 50%; object-fit: cover;"><br>
         <b>MUHAMAD ZULKARNAIN BIN<br>SAMSUDIN</b><br>
         <code>2024793133</code><br>
         <i>Frontend & Mobile Development</i>
